@@ -4,7 +4,7 @@ require 'dm-core'
 require 'dm-timestamps'  
 require 'dm-validations'  
 require 'dm-migrations'
-require 'dm-mysql-adapter'
+require 'dm-geokit'
 
 require 'json'
 require 'net/http'
@@ -15,6 +15,7 @@ DataMapper.setup :default, "sqlite://#{Dir.pwd}/database.db"
 
 class BusStop
 	include DataMapper::Resource
+	include DataMapper::GeoKit
 
 
 	property :id		, Integer		, unique_index: true, key: true
@@ -26,6 +27,8 @@ class BusStop
 	property :stopIndicator	, String
 	property :smsCode	, String
 	property :routes	, String
+
+	has_geographic_location :lat_column_name => :lat, :lng_column_name => :lng
 
 	DataMapper.auto_upgrade!
 	# DataMapper.auto_migrate!
@@ -49,7 +52,7 @@ def get_bus_stops!
 
 	result = JSON.parse(data).each do | item | 
 
-		item[1].each { | stop | busstop = BusStop.create stop; puts busstop }
+		item[1].each { | stop | puts BusStop.create stop; }
 
 		busstop.errors.each { |error| puts error }
 		
@@ -64,6 +67,10 @@ end
 
 # get_bus_stops!
 
-items = BusStop.all direction: 'w'
+# items = BusStop.all direction: 'w', limit: 10
 
-puts items
+# items.each { |item| puts item.name }
+
+near = BusStop.find_closest lat: 50, lng: 1 
+
+puts near
