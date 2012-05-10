@@ -27,8 +27,8 @@ class BusStop
 	property :smsCode	, String
 	property :routes	, String
 
-	# DataMapper.auto_upgrade!
-	DataMapper.auto_migrate!
+	DataMapper.auto_upgrade!
+	# DataMapper.auto_migrate!
 
 
 
